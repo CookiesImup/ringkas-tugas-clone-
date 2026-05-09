@@ -273,17 +273,20 @@
       document.getElementById('resultCard').classList.remove('show');
 
       try {
-        var res = await fetch('https://api.anthropic.com/v1/messages', {
+        var parts = [];
+        content.forEach(function(c) {
+          if (c.type === 'text') { parts.push({ text: c.text }); }
+          else if (c.type === 'image') { parts.push({ inline_data: { mime_type: c.source.media_type, data: c.source.data } }); }
+        });
+        var res = await fetch('https://ringkas-api.ryalandsokay.workers.dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            messages: [{ role: 'user', content: content }]
-          })
+          body: JSON.stringify({ messages: [{ role: 'user', parts: parts }] })
         });
         var data = await res.json();
-        var text = (data.content || []).map(function(b) { return b.text || ''; }).join('') || 'Gagal mendapat respons.';
+        var text = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
+          ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('')
+          : JSON.stringify(data);
         document.getElementById('resultBody').textContent = text;
         document.getElementById('resultCard').classList.add('show');
       } catch (err) {
