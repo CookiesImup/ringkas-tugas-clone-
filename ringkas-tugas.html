@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ringkas Tugas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
+      --accent: #c8f135; --accent2: #f1c135; --text: #f0f0f0; --muted: #555;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 48px 16px; position: relative; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px; opacity: 0.35; pointer-events: none; z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; width: 100%; max-width: 720px; }
+    header { margin-bottom: 48px; animation: fadeDown 0.6s ease both; }
+    .badge {
+      display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+      border: 1px solid var(--accent); padding: 4px 10px; margin-bottom: 16px;
+    }
+    h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 800; line-height: 1; letter-spacing: -1px; }
+    h1 span { color: var(--accent); }
+    .sub { margin-top: 12px; color: var(--muted); font-size: 14px; font-family: 'DM Mono', monospace; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 28px; margin-bottom: 20px; animation: fadeUp 0.5s ease both;
+    }
+    .card-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .tab {
+      font-family: 'DM Mono', monospace; font-size: 12px; padding: 6px 14px;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    }
+    .tab.active, .tab:hover { border-color: var(--accent); color: var(--accent); }
+    textarea {
+      width: 100%; background: #0d0d0d; border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
+      line-height: 1.7; padding: 16px; resize: vertical; min-height: 160px;
+      outline: none; transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: var(--accent); }
+    textarea::placeholder { color: var(--muted); }
+    .upload-area {
+      border: 2px dashed var(--border); padding: 40px 32px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      display: none; user-select: none;
+    }
+    .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: rgba(200,241,53,0.03); }
+    .upload-area.active { display: block; }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+    .upload-label { font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; line-height: 1.8; }
+    .preview-grid { display: none; margin-top: 12px; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .preview-grid.show { display: grid; }
+    .preview-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--border); }
+    .options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .opt {
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px;
+      padding: 6px 12px; border: 1px solid var(--border); background: transparent;
+      color: var(--muted); cursor: pointer; transition: all 0.2s;
+    }
+    .opt.selected { border-color: var(--accent2); color: var(--accent2); background: rgba(241,193,53,0.05); }
+    .btn {
+      margin-top: 20px; width: 100%; padding: 16px; background: var(--accent);
+      color: #0d0d0d; font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+      border: none; cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .result-card { display: none; animation: fadeUp 0.4s ease both; }
+    .result-card.show { display: block; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .result-title { font-size: 12px; font-family: 'DM Mono', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+    .copy-btn {
+      font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 12px;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .result-body {
+      font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.9;
+      color: var(--text); white-space: pre-wrap; background: #0d0d0d;
+      border: 1px solid var(--border); padding: 20px; min-height: 100px;
+    }
+    .loading { display: none; text-align: center; padding: 32px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--muted); }
+    .loading.show { display: block; }
+    .dots span { animation: blink 1.2s infinite; font-size: 20px; color: var(--accent); }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">AI Tool &middot; Pelajar</div>
+      <h1>Ringkas<br/><span>Tugas.</span></h1>
+      <p class="sub">// paste teks atau foto buku paket &mdash; langsung diringkas</p>
+    </header>
+
+    <div class="card">
+      <div class="card-label">// Input Tugas</div>
+
+      <div class="tabs">
+        <button class="tab active" id="tabText">Teks</button>
+        <button class="tab" id="tabFoto">Foto</button>
+      </div>
+
+      <textarea id="textInput" placeholder="Paste teks tugas di sini..."></textarea>
+
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none"/>
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">&#128247;</div>
+        <div class="upload-label" id="uploadLabel">
+          Klik di sini untuk pilih foto<br/>
+          <span style="font-size:11px;opacity:0.6">Bisa pilih sampai 4 foto sekaligus &middot; JPG &middot; PNG</span>
+        </div>
+      </div>
+      <div class="preview-grid" id="previewGrid"></div>
+
+      <div class="card-label" style="margin-top:20px;">// Gaya Ringkasan</div>
+      <div class="options" id="styleOpts">
+        <button class="opt selected">Poin Penting</button>
+        <button class="opt">Narasi Singkat</button>
+        <button class="opt">Tabel</button>
+      </div>
+
+      <div class="card-label" style="margin-top:16px;">// Panjang</div>
+      <div class="options" id="lengthOpts">
+        <button class="opt selected">Pendek</button>
+        <button class="opt">Sedang</button>
+        <button class="opt">Detail</button>
+      </div>
+
+      <button class="btn" id="submitBtn">&#9889; Ringkas Sekarang</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="dots"><span>&#9679;</span><span>&#9679;</span><span>&#9679;</span></div>
+      <div style="margin-top:12px;">Sedang meringkas...</div>
+    </div>
+
+    <div class="card result-card" id="resultCard">
+      <div class="result-header">
+        <div class="result-title">// Hasil Ringkasan</div>
+        <button class="copy-btn" id="copyBtn">Salin</button>
+      </div>
+      <div class="result-body" id="resultBody"></div>
+    </div>
+  </div>
+
+  <script>
+    var currentTab = 'text';
+    var uploadedImages = [];
+
+    document.getElementById('tabText').addEventListener('click', function() {
+      currentTab = 'text';
+      document.getElementById('tabText').classList.add('active');
+      document.getElementById('tabFoto').classList.remove('active');
+      document.getElementById('textInput').style.display = 'block';
+      document.getElementById('uploadArea').classList.remove('active');
+      document.getElementById('previewGrid').classList.remove('show');
+    });
+
+    document.getElementById('tabFoto').addEventListener('click', function() {
+      currentTab = 'foto';
+      document.getElementById('tabFoto').classList.add('active');
+      document.getElementById('tabText').classList.remove('active');
+      document.getElementById('textInput').style.display = 'none';
+      document.getElementById('uploadArea').classList.add('active');
+      if (uploadedImages.length) document.getElementById('previewGrid').classList.add('show');
+    });
+
+    document.getElementById('uploadArea').addEventListener('click', function() {
+      document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('uploadArea').addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('drag');
+    });
+
+    document.getElementById('uploadArea').addEventListener('dragleave', function() {
+      this.classList.remove('drag');
+    });
+
+    document.getElementById('uploadArea').addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag');
+      processFiles(e.dataTransfer.files);
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+      processFiles(this.files);
+    });
+
+    function processFiles(files) {
+      var arr = Array.from(files).slice(0, 4);
+      if (!arr.length) return;
+      uploadedImages = [];
+      var grid = document.getElementById('previewGrid');
+      grid.innerHTML = '';
+      grid.classList.add('show');
+      document.getElementById('uploadLabel').innerHTML = '<span style="color:#c8f135">&#10003; ' + arr.length + ' foto dipilih</span>';
+      arr.forEach(function(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var full = e.target.result;
+          var parts = full.split(',');
+          var mediaType = parts[0].match(/:(.*?);/)[1];
+          uploadedImages.push({ base64: parts[1], mediaType: mediaType });
+          var img = document.createElement('img');
+          img.src = full;
+          grid.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('styleOpts').addEventListener('click', function(e) {
+      if (e.target.classList.contains('opt')) {
+        this.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
+        e.target.classList.add('selected');
+      }
+    });
+
+    document.getElementById('lengthOpts').addEventListener('click', function(e) {
+      if (e.target.classList.contains('opt')) {
+        this.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
+        e.target.classList.add('selected');
+      }
+    });
+
+    function getSelected(id) {
+      var sel = document.getElementById(id).querySelector('.opt.selected');
+      return sel ? sel.textContent.trim() : '';
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async function() {
+      var style = getSelected('styleOpts');
+      var length = getSelected('lengthOpts');
+      var promptText = 'Kamu adalah asisten pelajar. Ringkas isinya dengan gaya "' + style + '" dan panjang "' + length + '". Tulis dalam Bahasa Indonesia yang jelas dan mudah dipahami. Jika "Poin Penting" gunakan bullet points. Jika "Narasi Singkat" tulis paragraf padat. Jika "Tabel" buat tabel ASCII sederhana.';
+      var content = [];
+
+      if (currentTab === 'text') {
+        var input = document.getElementById('textInput').value.trim();
+        if (!input) { alert('Isi dulu teks tugasnya.'); return; }
+        content = [{ type: 'text', text: promptText + '\n\nTeks:\n"""\n' + input + '\n"""' }];
+      } else {
+        if (!uploadedImages.length) { alert('Upload foto dulu.'); return; }
+        uploadedImages.forEach(function(img) {
+          content.push({ type: 'image', source: { type: 'base64', media_type: img.mediaType, data: img.base64 } });
+        });
+        content.push({ type: 'text', text: promptText });
+      }
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('loading').classList.add('show');
+      document.getElementById('resultCard').classList.remove('show');
+
+      try {
+        var res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{ role: 'user', content: content }]
+          })
+        });
+        var data = await res.json();
+        var text = (data.content || []).map(function(b) { return b.text || ''; }).join('') || 'Gagal mendapat respons.';
+        document.getElementById('resultBody').textContent = text;
+        document.getElementById('resultCard').classList.add('show');
+      } catch (err) {
+        document.getElementById('resultBody').textContent = 'Error: ' + err.message;
+        document.getElementById('resultCard').classList.add('show');
+      } finally {
+        document.getElementById('loading').classList.remove('show');
+        document.getElementById('submitBtn').disabled = false;
+      }
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      var text = document.getElementById('resultBody').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        document.getElementById('copyBtn').textContent = 'Disalin';
+        setTimeout(function() { document.getElementById('copyBtn').textContent = 'Salin'; }, 2000);
+      });
+    });
+  </script>
+</body>
+</html>
