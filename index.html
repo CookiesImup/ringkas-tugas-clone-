@@ -273,19 +273,22 @@
       document.getElementById('resultCard').classList.remove('show');
 
       try {
-        var parts = [];
+        var msgContent = [];
         content.forEach(function(c) {
-          if (c.type === 'text') { parts.push({ text: c.text }); }
-          else if (c.type === 'image') { parts.push({ inline_data: { mime_type: c.source.media_type, data: c.source.data } }); }
+          if (c.type === 'text') {
+            msgContent.push({ type: 'text', text: c.text });
+          } else if (c.type === 'image') {
+            msgContent.push({ type: 'image_url', image_url: { url: 'data:' + c.source.media_type + ';base64,' + c.source.data } });
+          }
         });
         var res = await fetch('https://ringkas-api.ryalandsokay.workers.dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: [{ role: 'user', parts: parts }] })
+          body: JSON.stringify({ messages: [{ role: 'user', content: msgContent }] })
         });
         var data = await res.json();
-        var text = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
-          ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('')
+        var text = (data.choices && data.choices[0] && data.choices[0].message)
+          ? data.choices[0].message.content
           : JSON.stringify(data);
         document.getElementById('resultBody').textContent = text;
         document.getElementById('resultCard').classList.add('show');
