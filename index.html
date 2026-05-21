@@ -118,6 +118,7 @@
       <div class="tabs">
         <button class="tab active" id="tabText">Teks</button>
         <button class="tab" id="tabFoto">Foto</button>
+        <button class="tab" id="tabYT">YouTube</button>
       </div>
 
       <textarea id="textInput" placeholder="Paste teks tugas di sini..."></textarea>
@@ -131,6 +132,9 @@
         </div>
       </div>
       <div class="preview-grid" id="previewGrid"></div>
+      <div id="ytArea" style="display:none;">
+        <input type="text" id="ytUrl" placeholder="Paste link YouTube di sini..." style="width:100%;background:#0d0d0d;border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:16px;outline:none;transition:border-color 0.2s;"/>
+      </div>
 
       <div class="card-label" style="margin-top:20px;">// Gaya Ringkasan</div>
       <div class="options" id="styleOpts">
@@ -174,6 +178,7 @@
       document.getElementById('textInput').style.display = 'block';
       document.getElementById('uploadArea').classList.remove('active');
       document.getElementById('previewGrid').classList.remove('show');
+      document.getElementById('ytArea').style.display = 'none';
     });
 
     document.getElementById('tabFoto').addEventListener('click', function() {
@@ -183,6 +188,18 @@
       document.getElementById('textInput').style.display = 'none';
       document.getElementById('uploadArea').classList.add('active');
       if (uploadedImages.length) document.getElementById('previewGrid').classList.add('show');
+      document.getElementById('ytArea').style.display = 'none';
+    });
+
+    document.getElementById('tabYT').addEventListener('click', function() {
+      currentTab = 'yt';
+      document.getElementById('tabYT').classList.add('active');
+      document.getElementById('tabText').classList.remove('active');
+      document.getElementById('tabFoto').classList.remove('active');
+      document.getElementById('textInput').style.display = 'none';
+      document.getElementById('uploadArea').classList.remove('active');
+      document.getElementById('previewGrid').classList.remove('show');
+      document.getElementById('ytArea').style.display = 'block';
     });
 
     document.getElementById('uploadArea').addEventListener('click', function() {
@@ -260,12 +277,16 @@
         var input = document.getElementById('textInput').value.trim();
         if (!input) { alert('Isi dulu teks tugasnya.'); return; }
         content = [{ type: 'text', text: promptText + '\n\nTeks:\n"""\n' + input + '\n"""' }];
-      } else {
+      } else if (currentTab === 'foto') {
         if (!uploadedImages.length) { alert('Upload foto dulu.'); return; }
         uploadedImages.forEach(function(img) {
           content.push({ type: 'image', source: { type: 'base64', media_type: img.mediaType, data: img.base64 } });
         });
         content.push({ type: 'text', text: promptText });
+      } else if (currentTab === 'yt') {
+        var ytUrl = document.getElementById('ytUrl').value.trim();
+        if (!ytUrl) { alert('Masukkan link YouTube dulu.'); return; }
+        content = [{ type: 'text', text: promptText + '\n\nRingkas konten dari video YouTube ini: ' + ytUrl + '. Jika kamu tidak bisa mengakses video, jelaskan bahwa fitur ini membutuhkan transcript.' }];
       }
 
       document.getElementById('submitBtn').disabled = true;
