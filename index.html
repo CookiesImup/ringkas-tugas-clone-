@@ -1,658 +1,245 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>K's Tools for School</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
-  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
-};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Ringkas AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#0a0a0a;--surface:#111111;--surface2:#181818;
-  --border:#222222;--border2:#2d2d2d;
-  --accent:#4ade80;--accent2:#22d3ee;--accent3:#f59e0b;
-  --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;
-}
-body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;z-index:100;display:flex;flex-direction:column;}
-.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
-.logo-wrap{display:flex;align-items:center;gap:10px;}
-.logo-text{font-size:15px;font-weight:700;color:var(--accent);}
-.logo-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-.nav-section{padding:0 12px;margin-bottom:8px;}
-.nav-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:all 0.15s;border:1px solid transparent;}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:rgba(74,222,128,0.08);color:var(--accent);border-color:rgba(74,222,128,0.15);}
-.nav-icon{font-size:14px;width:18px;text-align:center;}
-.sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
-.lang-toggle{display:flex;gap:4px;}
-.lang-btn{padding:2px 7px;font-size:10px;cursor:pointer;border-radius:3px;font-family:'JetBrains Mono',monospace;transition:all 0.15s;}
-.main{margin-left:220px;min-height:100vh;padding:32px;}
-.page{display:none;}.page.active{display:block;}
-.page-header{margin-bottom:24px;}
-.page-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
-.page-desc{font-size:13px;color:var(--text2);margin-top:4px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
-.card-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:14px;}
-.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
-.mode-btn{padding:12px 8px;border:1px solid var(--border2);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;transition:all 0.15s;text-align:center;}
-.mode-btn .mode-icon{font-size:18px;display:block;margin-bottom:4px;}
-.mode-btn:hover,.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(74,222,128,0.05);}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.chip{padding:5px 12px;border:1px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:12px;transition:all 0.15s;}
-.chip:hover{border-color:var(--accent2);color:var(--accent2);}
-.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(34,211,238,0.08);}
-textarea,input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;padding:14px;outline:none;transition:border-color 0.15s;resize:vertical;}
-textarea{min-height:140px;}
-textarea:focus,input[type=text]:focus{border-color:var(--accent);}
-textarea::placeholder,input[type=text]::placeholder{color:var(--text3);}
-.upload-zone{border:1.5px dashed var(--border2);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:all 0.15s;display:none;}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(74,222,128,0.03);}
-.upload-zone.show{display:block;}
-.upload-zone-icon{font-size:28px;margin-bottom:8px;}
-.upload-zone-text{font-size:13px;color:var(--text2);}
-.upload-zone-sub{font-size:11px;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace;}
-.preview-row{display:none;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.preview-row.show{display:flex;}
-.preview-row img{width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border2);}
-.dir-wrap{margin-top:12px;}
-.dir-label{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;}
-.submit-btn{width:100%;padding:13px;background:var(--accent);color:#0a0a0a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer;margin-top:14px;transition:opacity 0.15s;}
-.submit-btn:hover{opacity:0.9;}
-.submit-btn:disabled{opacity:0.35;cursor:not-allowed;}
-.loading-wrap{display:none;padding:24px;text-align:center;}
-.loading-wrap.show{display:block;}
-.loading-dots{display:flex;justify-content:center;gap:6px;margin-bottom:10px;}
-.loading-dots span{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;}
-.loading-dots span:nth-child(2){animation-delay:0.2s;}
-.loading-dots span:nth-child(3){animation-delay:0.4s;}
-@keyframes pulse{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1);}}
-.loading-text{font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
-.result-wrap{display:none;}
-.result-wrap.show{display:block;}
-.result-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.result-label{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
-.result-actions{display:flex;gap:6px;}
-.action-btn{padding:5px 12px;border:1px solid var(--border2);border-radius:5px;background:transparent;color:var(--text2);font-size:11px;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all 0.15s;}
-.action-btn:hover{border-color:var(--accent);color:var(--accent);}
-.result-body{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:20px;min-height:80px;font-size:14px;line-height:1.8;}
-.result-body h1,.result-body h2,.result-body h3{color:var(--accent);margin:16px 0 8px;font-weight:600;}
-.result-body h1{font-size:18px;}.result-body h2{font-size:16px;}.result-body h3{font-size:14px;}
-.result-body p{margin-bottom:10px;}
-.result-body ul,.result-body ol{margin:8px 0 10px 20px;}
-.result-body li{margin-bottom:4px;}
-.result-body strong{color:var(--accent2);font-weight:600;}
-.result-body em{color:var(--accent3);}
-.result-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
-.result-body th{background:var(--surface);border:1px solid var(--border2);padding:8px 12px;text-align:left;color:var(--accent);font-weight:600;}
-.result-body td{border:1px solid var(--border2);padding:8px 12px;}
-.result-body tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
-.result-body code{background:var(--surface);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent3);}
-.result-body pre{background:var(--surface);padding:14px;border-radius:8px;overflow-x:auto;margin:10px 0;}
-.result-body blockquote{border-left:3px solid var(--accent);padding-left:14px;color:var(--text2);margin:10px 0;}
-.empty-state{text-align:center;padding:40px;color:var(--text3);font-size:13px;}
-.empty-icon{font-size:32px;margin-bottom:10px;}
-.history-item{padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s;}
-.history-item:hover{border-color:var(--border2);}
-.history-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
-.history-preview{font-size:13px;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;padding:16px;}}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--accent:#7c3aed;--accent2:#a855f7;--red:#ef4444;--green:#22c55e;--text:#e4e4e7;--text2:#a1a1aa;--text3:#52525b;--border:#27272a}
+html,body{height:100%;width:100%;overflow:hidden}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+.header{padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.h-title{font-size:15px;font-weight:700}
+.badge{font-size:9px;background:var(--accent);color:#fff;padding:2px 7px;border-radius:8px;font-weight:600}
+.h-right{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-clr{background:none;border:1px solid var(--border);color:var(--text2);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;margin-left:6px}
+.btn-clr:active{background:var(--bg3)}
+
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.chat::-webkit-scrollbar{width:3px}
+.chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:24px}
+.w-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.welcome h2{font-size:18px;font-weight:700}
+.welcome p{font-size:13px;color:var(--text2);max-width:280px;line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.tag{font-size:11px;background:var(--bg2);border:1px solid var(--border);padding:5px 10px;border-radius:16px;color:var(--text2)}
+
+.msg{max-width:88%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.6;word-wrap:break-word;overflow-wrap:break-word}
+.msg-u{align-self:flex-end;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-bottom-right-radius:4px}
+.msg-a{align-self:flex-start;background:var(--bg2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg-a p{margin-bottom:6px}.msg-a p:last-child{margin-bottom:0}
+.msg-a strong{color:var(--accent2)}
+.msg-a code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:12px}
+.msg-a pre{background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto;margin:6px 0;font-size:12px}
+.msg-a pre code{background:none;padding:0}
+.msg-a ul,.msg-a ol{padding-left:18px;margin:6px 0}
+.msg-a li{margin-bottom:3px}
+.msg-img{max-width:180px;max-height:120px;border-radius:8px;margin-top:6px;object-fit:cover;display:block}
+.msg-err{align-self:center;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:13px;padding:8px 14px;border-radius:10px;max-width:90%;text-align:center}
+
+.typing{align-self:flex-start;background:var(--bg2);border:1px solid var(--border);padding:10px 18px;border-radius:14px;border-bottom-left-radius:4px;display:flex;gap:4px;align-items:center}
+.typing span{width:7px;height:7px;background:var(--text3);border-radius:50%;animation:bounce 1.4s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+.img-bar{display:none;padding:8px 12px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0}
+.img-bar.show{display:flex;align-items:center;gap:10px}
+.img-bar img{width:44px;height:44px;object-fit:cover;border-radius:6px}
+.img-bar-info{flex:1;min-width:0}
+.img-bar-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.img-bar-size{font-size:10px;color:var(--text3)}
+.img-bar-rm{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:4px;line-height:1}
+
+.input-area{padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0}
+.input-row{display:flex;align-items:flex-end;gap:8px}
+.btn-att{width:40px;height:40px;flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-att:active{background:var(--accent);color:#fff}
+.i-wrap{flex:1;min-width:0}
+.i-wrap textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:16px;font-family:inherit;resize:none;outline:none;max-height:120px;line-height:1.4}
+.i-wrap textarea::placeholder{color:var(--text3)}
+.i-wrap textarea:focus{border-color:var(--accent)}
+.btn-send{width:40px;height:40px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-send:disabled{opacity:.4;cursor:default}
+.btn-send:active:not(:disabled){opacity:.8}
+#fileInput{display:none}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-wrap">
-      <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100" height="100" fill="#111" rx="8"/>
-        <rect x="28" y="20" width="6" height="60" fill="#4ade80"/>
-        <polygon points="34,20 52,20 72,50 52,50" fill="#4ade80" opacity="0.9"/>
-        <polygon points="34,52 52,52 76,80 52,80" fill="#4ade80" opacity="0.9"/>
-        <circle cx="72" cy="50" r="4" fill="#22d3ee"/>
-      </svg>
-      <div>
-        <div class="logo-text">K's Tools</div>
-        <div class="logo-sub">for School</div>
-      </div>
-    </div>
+<div class="header">
+  <div class="header-left">
+    <div class="logo">⚡</div>
+    <span class="h-title">Ringkas AI</span>
+    <span class="badge">REALTIME</span>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Menu</div>
-    <div class="nav-item active" id="nav-ringkas" onclick="showPage('ringkas')">
-      <span class="nav-icon">&#9889;</span><span id="txt-nav-ringkas">Ringkas</span>
-    </div>
-    <div class="nav-item" id="nav-kuis" onclick="showPage('kuis')">
-      <span class="nav-icon">&#10067;</span><span id="txt-nav-kuis">Mode Kuis</span>
-    </div>
-    <div class="nav-item" id="nav-terjemahan" onclick="showPage('terjemahan')">
-      <span class="nav-icon">&#127760;</span><span id="txt-nav-terjemahan">Terjemahan</span>
-    </div>
-    <div class="nav-item" id="nav-riwayat" onclick="showPage('riwayat')">
-      <span class="nav-icon">&#128338;</span><span id="txt-nav-riwayat">Riwayat</span>
-    </div>
-    <div class="nav-item" id="nav-tentang" onclick="showPage('tentang')">
-      <span class="nav-icon">&#8505;</span><span id="txt-nav-tentang">Tentang</span>
-    </div>
-    <div class="nav-item" onclick="window.open('https://saweria.co/iiiaaannn','_blank')" style="margin-top:8px;border-color:rgba(245,158,11,0.2);color:var(--accent3);">
-      <span class="nav-icon">&#9749;</span><span id="txt-nav-dukung">Dukung</span>
-    </div>
+  <div class="h-right">
+    <div class="dot"></div>
+    <span>Online</span>
+    <button class="btn-clr" onclick="clearChat()">Clear</button>
   </div>
+</div>
 
-  <div class="sidebar-footer">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <span>v1.0 &middot; Groq</span>
-      <div class="lang-toggle">
-        <button class="lang-btn" id="btnID" onclick="setLang('id')" style="border:1px solid var(--accent);background:rgba(74,222,128,0.1);color:var(--accent);">ID</button>
-        <button class="lang-btn" id="btnEN" onclick="setLang('en')" style="border:1px solid var(--border2);background:transparent;color:var(--text3);">EN</button>
-      </div>
+<div class="chat" id="chat">
+  <div class="welcome" id="welcome">
+    <div class="w-icon">⚡</div>
+    <h2>Ringkas AI</h2>
+    <p>AI real-time dengan akses internet. Tanya apa saja, kirim foto, dapatkan jawaban terkini.</p>
+    <div class="tags">
+      <span class="tag">🔍 Web Search</span>
+      <span class="tag">📸 Foto</span>
+      <span class="tag">⚡ Real-time</span>
     </div>
   </div>
 </div>
 
-<div class="main">
-
-  <!-- RINGKAS -->
-  <div class="page active" id="page-ringkas">
-    <div class="page-header">
-      <div class="page-title" id="txt-ringkas-title">Ringkas Materi</div>
-      <div class="page-desc" id="txt-ringkas-desc">Teks, foto, atau YouTube &mdash; diringkas sesuai gaya yang kamu mau</div>
-    </div>
-    <div class="card">
-      <div class="card-title" id="txt-mode-label">Mode Input</div>
-      <div class="mode-grid">
-        <button class="mode-btn active" id="modeText" onclick="setMode('text')">
-          <span class="mode-icon">&#128196;</span><span id="txt-mode-text">Teks</span>
-        </button>
-        <button class="mode-btn" id="modeFoto" onclick="setMode('foto')">
-          <span class="mode-icon">&#128247;</span><span id="txt-mode-foto">Foto</span>
-        </button>
-        <button class="mode-btn" id="modeYT" onclick="setMode('yt')">
-          <span class="mode-icon">&#9654;</span><span id="txt-mode-yt">YouTube</span>
-        </button>
-      </div>
-      <div id="inputText">
-        <textarea id="textArea" placeholder="Paste atau ketik materi di sini..."></textarea>
-      </div>
-      <div id="inputFoto" style="display:none;">
-        <input type="file" id="fileInput" accept="image/*" multiple style="display:none"/>
-        <div class="upload-zone show" id="uploadZone">
-          <div class="upload-zone-icon">&#128247;</div>
-          <div class="upload-zone-text" id="txt-upload-text">Klik untuk pilih foto</div>
-          <div class="upload-zone-sub" id="txt-upload-sub">Maks 4 foto &middot; JPG &middot; PNG &middot; WEBP</div>
-        </div>
-        <div class="preview-row" id="previewRow"></div>
-        <div class="dir-wrap">
-          <div class="dir-label" id="txt-dir-label">Arahan jawaban (opsional)</div>
-          <input type="text" id="directionInput" placeholder="cth: fokus ke rumus, jelaskan langkah-langkah, dll"/>
-        </div>
-      </div>
-      <div id="inputYT" style="display:none;">
-        <input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=..."/>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title" id="txt-style-label">Gaya Ringkasan</div>
-      <div class="chips" id="styleRow">
-        <button class="chip active" data-style-id="Poin Penting" data-style-en="Key Points">Poin Penting</button>
-        <button class="chip" data-style-id="Narasi Singkat" data-style-en="Short Narrative">Narasi Singkat</button>
-        <button class="chip" data-style-id="Tabel Ringkasan" data-style-en="Summary Table">Tabel</button>
-        <button class="chip" data-style-id="Langkah-langkah" data-style-en="Step-by-Step">Langkah-langkah</button>
-        <button class="chip" data-style-id="Rumus &amp; Definisi" data-style-en="Formulas &amp; Definitions">Rumus &amp; Definisi</button>
-        <button class="chip" data-style-id="Soal &amp; Jawaban" data-style-en="Q &amp; A">Soal &amp; Jawaban</button>
-      </div>
-    </div>
-    <button class="submit-btn" id="submitBtn" onclick="doRingkas()">&#9889; Ringkas Sekarang</button>
-    <div class="loading-wrap" id="loadingWrap">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <div class="loading-text" id="txt-loading-ringkas">Sedang memproses...</div>
-    </div>
-    <div class="result-wrap" id="resultWrap">
-      <div class="card">
-        <div class="result-toolbar">
-          <div class="result-label" id="txt-result-label">Hasil</div>
-          <div class="result-actions">
-            <button class="action-btn" onclick="copyResult()" id="txt-btn-salin">Salin</button>
-            <button class="action-btn" onclick="saveHistory()" id="txt-btn-simpan">Simpan</button>
-          </div>
-        </div>
-        <div class="result-body" id="resultBody"></div>
-      </div>
-    </div>
+<div class="img-bar" id="imgBar">
+  <img id="imgThumb" src="" alt="">
+  <div class="img-bar-info">
+    <div class="img-bar-name" id="imgName"></div>
+    <div class="img-bar-size" id="imgSize"></div>
   </div>
+  <button class="img-bar-rm" onclick="removeImg()">✕</button>
+</div>
 
-  <!-- KUIS -->
-  <div class="page" id="page-kuis">
-    <div class="page-header">
-      <div class="page-title" id="txt-kuis-title">Mode Kuis</div>
-      <div class="page-desc" id="txt-kuis-desc">AI bikin soal dari materi yang kamu input</div>
+<div class="input-area">
+  <div class="input-row">
+    <button class="btn-att" onclick="document.getElementById('fileInput').click()">📎</button>
+    <input type="file" id="fileInput" accept="image/*" onchange="pickFile(event)">
+    <div class="i-wrap">
+      <textarea id="input" rows="1" placeholder="Ketik pertanyaan..." onkeydown="onKey(event)" oninput="autoH(this)"></textarea>
     </div>
-    <div class="card">
-      <div class="card-title" id="txt-kuis-materi-label">Materi Kuis</div>
-      <textarea id="kuisInput" placeholder="Paste materi di sini, AI akan bikin soal dari materi ini..."></textarea>
-    </div>
-    <div class="card">
-      <div class="card-title" id="txt-kuis-jumlah-label">Jumlah Soal</div>
-      <div class="chips" id="kuisJumlah">
-        <button class="chip active" data-jumlah="5">5 Soal</button>
-        <button class="chip" data-jumlah="10">10 Soal</button>
-        <button class="chip" data-jumlah="15">15 Soal</button>
-        <button class="chip" data-jumlah="20">20 Soal</button>
-      </div>
-      <div class="card-title" style="margin-top:14px;" id="txt-kuis-tipe-label">Tipe Soal</div>
-      <div class="chips" id="kuisTipe">
-        <button class="chip active" data-tipe-id="Pilihan Ganda (A/B/C/D)" data-tipe-en="Multiple Choice (A/B/C/D)">Pilihan Ganda</button>
-        <button class="chip" data-tipe-id="Benar/Salah" data-tipe-en="True/False">Benar / Salah</button>
-        <button class="chip" data-tipe-id="Essay singkat" data-tipe-en="Short Essay">Essay Singkat</button>
-      </div>
-    </div>
-    <button class="submit-btn" id="kuisBtn" onclick="doKuis()">&#10067; Buat Kuis</button>
-    <div class="loading-wrap" id="kuisLoading">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <div class="loading-text" id="txt-loading-kuis">AI sedang membuat soal...</div>
-    </div>
-    <div class="result-wrap" id="kuisResult">
-      <div class="card">
-        <div class="result-toolbar">
-          <div class="result-label" id="txt-kuis-result-label">Soal Kuis</div>
-          <div class="result-actions">
-            <button class="action-btn" onclick="copyKuis()">Salin</button>
-          </div>
-        </div>
-        <div class="result-body" id="kuisBody"></div>
-      </div>
-    </div>
+    <button class="btn-send" id="btnSend" onclick="send()">➤</button>
   </div>
-
-  <!-- TERJEMAHAN -->
-  <div class="page" id="page-terjemahan">
-    <div class="page-header">
-      <div class="page-title" id="txt-trans-title">Terjemahan</div>
-      <div class="page-desc" id="txt-trans-desc">Terjemahkan materi ke berbagai bahasa</div>
-    </div>
-    <div class="card">
-      <div class="card-title" id="txt-trans-input-label">Teks yang Mau Diterjemahkan</div>
-      <textarea id="transInput" placeholder="Paste teks di sini..."></textarea>
-    </div>
-    <div class="card">
-      <div class="card-title" id="txt-trans-to-label">Terjemahkan ke</div>
-      <div class="chips" id="langRow">
-        <button class="chip active" data-lang="Bahasa Indonesia">&#127470;&#127465; Indonesia</button>
-        <button class="chip" data-lang="English">&#127468;&#127463; English</button>
-        <button class="chip" data-lang="Bahasa Melayu">&#127474;&#127486; Melayu</button>
-        <button class="chip" data-lang="Arabic">&#127462;&#127479; Arab</button>
-        <button class="chip" data-lang="Japanese">&#127471;&#127477; Jepang</button>
-        <button class="chip" data-lang="Korean">&#127472;&#127479; Korea</button>
-        <button class="chip" data-lang="Mandarin Chinese">&#127464;&#127475; Mandarin</button>
-        <button class="chip" data-lang="Spanish">&#127466;&#127480; Spanyol</button>
-        <button class="chip" data-lang="French">&#127467;&#127479; Prancis</button>
-      </div>
-    </div>
-    <button class="submit-btn" id="transBtn" onclick="doTerjemah()">&#127760; Terjemahkan</button>
-    <div class="loading-wrap" id="transLoading">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <div class="loading-text" id="txt-loading-trans">Sedang menerjemahkan...</div>
-    </div>
-    <div class="result-wrap" id="transResult">
-      <div class="card">
-        <div class="result-toolbar">
-          <div class="result-label" id="txt-trans-result-label">Hasil Terjemahan</div>
-          <div class="result-actions">
-            <button class="action-btn" onclick="copyTrans()">Salin</button>
-          </div>
-        </div>
-        <div class="result-body" id="transBody"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIWAYAT -->
-  <div class="page" id="page-riwayat">
-    <div class="page-header">
-      <div class="page-title" id="txt-riwayat-title">Riwayat</div>
-      <div class="page-desc" id="txt-riwayat-desc">Hasil ringkasan yang disimpan</div>
-    </div>
-    <div id="historyList"></div>
-  </div>
-
-  <!-- TENTANG -->
-  <div class="page" id="page-tentang">
-    <div class="page-header">
-      <div class="page-title" id="txt-tentang-title">Tentang</div>
-    </div>
-    <div class="card">
-      <div class="card-title">K's Tools for School</div>
-      <p style="font-size:14px;color:var(--text2);line-height:1.9;">
-        Tool AI buat pelajar &mdash; ringkas materi, buat kuis, terjemahkan teks.<br/><br/>
-        Powered by <strong style="color:var(--accent)">Groq AI</strong> &middot; Web search by <strong style="color:var(--accent)">Tavily</strong><br/><br/>
-        Output mendukung <strong style="color:var(--accent2)">Markdown</strong>, <strong style="color:var(--accent2)">Tabel</strong>, dan <strong style="color:var(--accent2)">Rumus LaTeX</strong>.
-      </p>
-    </div>
-  </div>
-
 </div>
 
 <script>
-var WORKER = 'https://ringkas-api.ryalandsokay.workers.dev';
-var currentMode = 'text';
-var currentLang = 'id';
-var uploadedImages = [];
-var lastResultText = '';
-var lastKuisText = '';
-var lastTransText = '';
-var historyData = JSON.parse(localStorage.getItem('kstools_history') || '[]');
+const API='https://ringkas-api.ryalandsokay.workers.dev';
+const SYS=`Kamu adalah Ringkas AI, asisten AI real-time yang bisa mengakses informasi terkini dari internet. Kamu selalu menggunakan data terbaru dari hasil pencarian web sebagai referensi utama. Jawab dalam Bahasa Indonesia yang natural dan informatif. Jika user mengirim foto, analisis dan jawab pertanyaan tentang foto tersebut.`;
 
-var i18n = {
-  id: {
-    'nav-ringkas':'Ringkas','nav-kuis':'Mode Kuis','nav-terjemahan':'Terjemahan',
-    'nav-riwayat':'Riwayat','nav-tentang':'Tentang','nav-dukung':'Dukung',
-    'ringkas-title':'Ringkas Materi',
-    'ringkas-desc':'Teks, foto, atau YouTube \u2014 diringkas sesuai gaya yang kamu mau',
-    'mode-label':'Mode Input','mode-text':'Teks','mode-foto':'Foto','mode-yt':'YouTube',
-    'style-label':'Gaya Ringkasan',
-    'upload-text':'Klik untuk pilih foto','upload-sub':'Maks 4 foto \u00b7 JPG \u00b7 PNG \u00b7 WEBP',
-    'dir-label':'Arahan jawaban (opsional)',
-    'loading-ringkas':'Sedang memproses...','result-label':'Hasil',
-    'btn-salin':'Salin','btn-simpan':'Simpan',
-    'submitBtn':'\u26a1 Ringkas Sekarang',
-    'kuis-title':'Mode Kuis','kuis-desc':'AI bikin soal dari materi yang kamu input',
-    'kuis-materi-label':'Materi Kuis','kuis-jumlah-label':'Jumlah Soal','kuis-tipe-label':'Tipe Soal',
-    'loading-kuis':'AI sedang membuat soal...','kuis-result-label':'Soal Kuis',
-    'kuisBtn':'\u2753 Buat Kuis',
-    'trans-title':'Terjemahan','trans-desc':'Terjemahkan materi ke berbagai bahasa',
-    'trans-input-label':'Teks yang Mau Diterjemahkan','trans-to-label':'Terjemahkan ke',
-    'loading-trans':'Sedang menerjemahkan...','trans-result-label':'Hasil Terjemahan',
-    'transBtn':'\ud83c\udf10 Terjemahkan',
-    'riwayat-title':'Riwayat','riwayat-desc':'Hasil ringkasan yang disimpan',
-    'tentang-title':'Tentang'
-  },
-  en: {
-    'nav-ringkas':'Summarize','nav-kuis':'Quiz Mode','nav-terjemahan':'Translation',
-    'nav-riwayat':'History','nav-tentang':'About','nav-dukung':'Support',
-    'ringkas-title':'Summarize Material',
-    'ringkas-desc':'Text, photos, or YouTube \u2014 summarized the way you want',
-    'mode-label':'Input Mode','mode-text':'Text','mode-foto':'Photo','mode-yt':'YouTube',
-    'style-label':'Summary Style',
-    'upload-text':'Click to select photos','upload-sub':'Max 4 photos \u00b7 JPG \u00b7 PNG \u00b7 WEBP',
-    'dir-label':'Answer direction (optional)',
-    'loading-ringkas':'Processing...','result-label':'Result',
-    'btn-salin':'Copy','btn-simpan':'Save',
-    'submitBtn':'\u26a1 Summarize Now',
-    'kuis-title':'Quiz Mode','kuis-desc':'AI generates questions from your material',
-    'kuis-materi-label':'Quiz Material','kuis-jumlah-label':'Number of Questions','kuis-tipe-label':'Question Type',
-    'loading-kuis':'AI is generating questions...','kuis-result-label':'Quiz Questions',
-    'kuisBtn':'\u2753 Generate Quiz',
-    'trans-title':'Translation','trans-desc':'Translate material into various languages',
-    'trans-input-label':'Text to Translate','trans-to-label':'Translate to',
-    'loading-trans':'Translating...','trans-result-label':'Translation Result',
-    'transBtn':'\ud83c\udf10 Translate',
-    'riwayat-title':'History','riwayat-desc':'Saved summaries',
-    'tentang-title':'About'
-  }
-};
+let msgs=[],selImg=null,busy=false;
+const chatEl=document.getElementById('chat');
+const welEl=document.getElementById('welcome');
+const inpEl=document.getElementById('input');
+const btnEl=document.getElementById('btnSend');
+const barEl=document.getElementById('imgBar');
+const thumbEl=document.getElementById('imgThumb');
+const nameEl=document.getElementById('imgName');
+const sizeEl=document.getElementById('imgSize');
 
-function setLang(lang) {
-  currentLang = lang;
-  var t = i18n[lang];
-  Object.keys(t).forEach(function(k) {
-    var el = document.getElementById('txt-' + k);
-    if (el) el.textContent = t[k];
-    var btn = document.getElementById(k);
-    if (btn && (k === 'submitBtn' || k === 'kuisBtn' || k === 'transBtn')) btn.textContent = t[k];
-  });
-  // Update style chips
-  document.querySelectorAll('#styleRow .chip').forEach(function(c) {
-    c.textContent = lang === 'en' ? c.dataset.styleEn : c.dataset.styleId;
-  });
-  document.querySelectorAll('#kuisTipe .chip').forEach(function(c) {
-    c.textContent = lang === 'en' ? c.dataset.tipeEn : c.dataset.tipeId;
-  });
-  // Update placeholders
-  var placeholders = {
-    id: { textArea:'Paste atau ketik materi di sini...', kuisInput:'Paste materi di sini, AI akan bikin soal...', transInput:'Paste teks di sini...', directionInput:'cth: fokus ke rumus, jelaskan langkah-langkah, dll', ytUrl:'https://youtube.com/watch?v=...' },
-    en: { textArea:'Paste or type material here...', kuisInput:'Paste material here, AI will generate questions...', transInput:'Paste text here...', directionInput:'e.g: focus on formulas, explain step by step, etc', ytUrl:'https://youtube.com/watch?v=...' }
+function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}
+function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+function scroll(){requestAnimationFrame(()=>chatEl.scrollTop=chatEl.scrollHeight)}
+
+function pickFile(e){
+  const f=e.target.files[0];
+  if(!f)return;
+  if(!f.type.startsWith('image/')){alert('Hanya file gambar yang didukung.');e.target.value='';return}
+  if(f.size>10*1024*1024){alert('Maksimal 10MB.');e.target.value='';return}
+  const r=new FileReader();
+  r.onload=ev=>{
+    selImg={b64:ev.target.result,name:f.name,size:f.size};
+    thumbEl.src=ev.target.result;
+    nameEl.textContent=f.name;
+    sizeEl.textContent=fmtSize(f.size);
+    barEl.classList.add('show');
   };
-  Object.keys(placeholders[lang]).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.placeholder = placeholders[lang][id];
-  });
-  // Toggle buttons style
-  document.getElementById('btnID').style.borderColor = lang==='id' ? 'var(--accent)' : 'var(--border2)';
-  document.getElementById('btnID').style.color = lang==='id' ? 'var(--accent)' : 'var(--text3)';
-  document.getElementById('btnID').style.background = lang==='id' ? 'rgba(74,222,128,0.1)' : 'transparent';
-  document.getElementById('btnEN').style.borderColor = lang==='en' ? 'var(--accent)' : 'var(--border2)';
-  document.getElementById('btnEN').style.color = lang==='en' ? 'var(--accent)' : 'var(--text3)';
-  document.getElementById('btnEN').style.background = lang==='en' ? 'rgba(74,222,128,0.1)' : 'transparent';
+  r.readAsDataURL(f);
+  e.target.value='';
 }
 
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-  document.getElementById('page-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  if (name==='riwayat') renderHistory();
-}
+function removeImg(){selImg=null;barEl.classList.remove('show');thumbEl.src=''}
 
-function setMode(mode) {
-  currentMode = mode;
-  ['text','foto','yt'].forEach(function(m){
-    document.getElementById('mode'+m.charAt(0).toUpperCase()+m.slice(1)).classList.toggle('active', m===mode);
-  });
-  document.getElementById('inputText').style.display = mode==='text'?'block':'none';
-  document.getElementById('inputFoto').style.display = mode==='foto'?'block':'none';
-  document.getElementById('inputYT').style.display = mode==='yt'?'block':'none';
-}
-
-// Chip selectors
-function makeChipSelector(id) {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target.classList.contains('chip')) {
-      this.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
-      e.target.classList.add('active');
-    }
-  });
-}
-makeChipSelector('styleRow');
-makeChipSelector('kuisJumlah');
-makeChipSelector('kuisTipe');
-makeChipSelector('langRow');
-
-// Upload
-document.getElementById('uploadZone').addEventListener('click', function(){document.getElementById('fileInput').click();});
-document.getElementById('uploadZone').addEventListener('dragover', function(e){e.preventDefault();this.classList.add('drag');});
-document.getElementById('uploadZone').addEventListener('dragleave', function(){this.classList.remove('drag');});
-document.getElementById('uploadZone').addEventListener('drop', function(e){e.preventDefault();this.classList.remove('drag');processFiles(e.dataTransfer.files);});
-document.getElementById('fileInput').addEventListener('change', function(){processFiles(this.files);});
-
-function processFiles(files) {
-  var arr = Array.from(files).slice(0,4);
-  if (!arr.length) return;
-  uploadedImages = [];
-  var row = document.getElementById('previewRow');
-  row.innerHTML = '';
-  row.classList.add('show');
-  document.getElementById('txt-upload-text').textContent = arr.length + (currentLang==='en'?' photos selected':' foto dipilih');
-  arr.forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var full = e.target.result;
-      var parts = full.split(',');
-      var mt = parts[0].match(/:(.*?);/)[1];
-      uploadedImages.push({base64:parts[1],mediaType:mt});
-      var img = document.createElement('img');
-      img.src = full;
-      row.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-async function callAPI(messages) {
-  var res = await fetch(WORKER, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({messages:messages})
-  });
-  var data = await res.json();
-  return (data.choices && data.choices[0]) ? data.choices[0].message.content : JSON.stringify(data);
-}
-
-function renderHTML(text, elId) {
-  var el = document.getElementById(elId);
-  el.innerHTML = marked.parse(text);
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise([el]).catch(function(){});
+function addMsg(role,content,imgUrl){
+  if(welEl)welEl.remove();
+  const d=document.createElement('div');
+  d.className=role==='user'?'msg msg-u':'msg msg-a';
+  if(role==='ai'){d.innerHTML=fmtMD(content)}
+  else{
+    d.textContent=content;
+    if(imgUrl){const i=document.createElement('img');i.className='msg-img';i.src=imgUrl;d.appendChild(i)}
   }
+  chatEl.appendChild(d);scroll();return d
 }
 
-async function doRingkas() {
-  var lang = currentLang;
-  var styleChip = document.querySelector('#styleRow .chip.active');
-  var style = styleChip ? (lang==='en' ? styleChip.dataset.styleEn : styleChip.dataset.styleId) : 'Poin Penting';
-  var sys = lang==='en'
-    ? 'You are a smart student assistant. Answer in English. Use proper Markdown formatting: **bold**, *italic*, headings (##), bullet lists (-), and Markdown tables when requested. For math formulas, use LaTeX: inline ($formula$) or display ($$formula$$). Output ONLY in the requested style.'
-    : 'Kamu adalah asisten pelajar yang cerdas. Jawab dalam Bahasa Indonesia. Gunakan format Markdown: **bold**, *italic*, heading (##), bullet (-), tabel Markdown jika diminta. Untuk rumus matematika gunakan LaTeX: inline ($rumus$) atau display ($$rumus$$). Output HANYA sesuai gaya yang diminta.';
+function addErr(t){const d=document.createElement('div');d.className='msg-err';d.textContent=t;chatEl.appendChild(d);scroll()}
 
-  var msgContent = [];
-  if (currentMode==='text') {
-    var txt = document.getElementById('textArea').value.trim();
-    if (!txt) {alert(lang==='en'?'Please enter text first.':'Isi dulu teksnya.');return;}
-    msgContent = [{type:'text',text:(lang==='en'?'Summarize the following material in "'+style+'" style:\n\n':'Ringkas materi berikut dengan gaya "'+style+'":\n\n')+txt}];
-  } else if (currentMode==='foto') {
-    if (!uploadedImages.length) {alert(lang==='en'?'Please upload photos first.':'Upload foto dulu.');return;}
-    var dir = document.getElementById('directionInput').value.trim();
-    var prompt = lang==='en'
-      ? 'Read all the images and summarize the content in "'+style+'" style.'+(dir?' Special instruction: '+dir:'')
-      : 'Baca semua gambar dan ringkas isinya dengan gaya "'+style+'".'+( dir?' Arahan khusus: '+dir:'');
-    uploadedImages.forEach(function(img){
-      msgContent.push({type:'image_url',image_url:{url:'data:'+img.mediaType+';base64,'+img.base64}});
+function showTyp(){const d=document.createElement('div');d.className='typing';d.id='typ';d.innerHTML='<span></span><span></span><span></span>';chatEl.appendChild(d);scroll()}
+function hideTyp(){const e=document.getElementById('typ');if(e)e.remove()}
+
+function fmtMD(t){
+  t=t.replace(/```(\w*)\n?([\s\S]*?)```/g,'<pre><code>$2</code></pre>');
+  t=t.replace(/`([^`]+)`/g,'<code>$1</code>');
+  t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  t=t.replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>');
+  t=t.replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>');
+  t=t.replace(/\n\n/g,'</p><p>');
+  t=t.replace(/\n/g,'<br>');
+  return'<p>'+t+'</p>'.replace(/<p><\/p>/g,'')
+}
+
+function buildContent(text,img){
+  if(!img)return text;
+  return[{type:'text',text:text||'Jelaskan foto ini'},{type:'image_url',image_url:{url:img}}]
+}
+
+async function send(){
+  const text=inpEl.value.trim();
+  if(!text&&!selImg)return;
+  if(busy)return;
+
+  const userText=text||'(mengirim foto)';
+  const imgB64=selImg?selImg.b64:null;
+
+  addMsg('user',userText,imgB64);
+
+  msgs.push({role:'user',content:buildContent(text,imgB64)});
+
+  inpEl.value='';inpEl.style.height='auto';removeImg();
+  busy=true;btnEl.disabled=true;showTyp();
+
+  try{
+    const res=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'system',content:SYS},...msgs]})
     });
-    msgContent.push({type:'text',text:prompt});
-  } else {
-    var ytUrl = document.getElementById('ytUrl').value.trim();
-    if (!ytUrl) {alert(lang==='en'?'Please enter YouTube link.':'Masukkan link YouTube.');return;}
-    msgContent = [{type:'text',text:(lang==='en'?'Summarize this YouTube video in "'+style+'" style: ':'Ringkas video YouTube ini dengan gaya "'+style+'": ')+ytUrl}];
-  }
+    const data=await res.json();
+    hideTyp();
 
-  document.getElementById('submitBtn').disabled=true;
-  document.getElementById('loadingWrap').classList.add('show');
-  document.getElementById('resultWrap').classList.remove('show');
-  try {
-    lastResultText = await callAPI([{role:'system',content:sys},{role:'user',content:msgContent}]);
-    renderHTML(lastResultText,'resultBody');
-    document.getElementById('resultWrap').classList.add('show');
-  } catch(e) {
-    document.getElementById('resultBody').textContent='Error: '+e.message;
-    document.getElementById('resultWrap').classList.add('show');
-  } finally {
-    document.getElementById('loadingWrap').classList.remove('show');
-    document.getElementById('submitBtn').disabled=false;
+    if(data.error){
+      const em=data.details?.error?.message||data.error?.message||data.error||'Terjadi kesalahan';
+      addErr(typeof em==='string'?em:JSON.stringify(em));
+      return
+    }
+
+    const ai=data.choices?.[0]?.message?.content||'Maaf, tidak ada respons.';
+    msgs.push({role:'assistant',content:ai});
+    addMsg('ai',ai);
+  }catch(err){
+    hideTyp();addErr('Gagal menghubungi server. Coba lagi.');console.error(err)
+  }finally{
+    busy=false;btnEl.disabled=false;inpEl.focus()
   }
 }
 
-async function doKuis() {
-  var lang = currentLang;
-  var txt = document.getElementById('kuisInput').value.trim();
-  if (!txt) {alert(lang==='en'?'Please enter material first.':'Isi dulu materinya.');return;}
-  var jumlah = document.querySelector('#kuisJumlah .chip.active');
-  var tipeChip = document.querySelector('#kuisTipe .chip.active');
-  var j = jumlah ? jumlah.dataset.jumlah : '5';
-  var t = tipeChip ? (lang==='en' ? tipeChip.dataset.tipeEn : tipeChip.dataset.tipeId) : 'Pilihan Ganda';
-  var sys = lang==='en'
-    ? 'You are a teacher creating quiz questions. Create '+j+' questions of type "'+t+'" from the given material. Include an answer key at the end. Use proper Markdown formatting. Number each question.'
-    : 'Kamu adalah guru yang membuat soal kuis. Buat '+j+' soal tipe "'+t+'" dari materi yang diberikan. Sertakan kunci jawaban di akhir. Gunakan format Markdown yang rapi. Nomori setiap soal.';
-
-  document.getElementById('kuisBtn').disabled=true;
-  document.getElementById('kuisLoading').classList.add('show');
-  document.getElementById('kuisResult').classList.remove('show');
-  try {
-    lastKuisText = await callAPI([{role:'system',content:sys},{role:'user',content:[{type:'text',text:(lang==='en'?'Create quiz questions from this material:\n\n':'Buat soal kuis dari materi berikut:\n\n')+txt}]}]);
-    renderHTML(lastKuisText,'kuisBody');
-    document.getElementById('kuisResult').classList.add('show');
-  } catch(e) {
-    document.getElementById('kuisBody').textContent='Error: '+e.message;
-    document.getElementById('kuisResult').classList.add('show');
-  } finally {
-    document.getElementById('kuisLoading').classList.remove('show');
-    document.getElementById('kuisBtn').disabled=false;
-  }
+function clearChat(){
+  msgs=[];chatEl.innerHTML='';
+  const w=document.createElement('div');w.className='welcome';w.id='welcome';
+  w.innerHTML='<div class="w-icon">⚡</div><h2>Ringkas AI</h2><p>AI real-time dengan akses internet. Tanya apa saja, kirim foto, dapatkan jawaban terkini.</p><div class="tags"><span class="tag">🔍 Web Search</span><span class="tag">📸 Foto</span><span class="tag">⚡ Real-time</span></div>';
+  chatEl.appendChild(w)
 }
-
-async function doTerjemah() {
-  var lang = currentLang;
-  var txt = document.getElementById('transInput').value.trim();
-  if (!txt) {alert(lang==='en'?'Please enter text first.':'Isi dulu teksnya.');return;}
-  var targetLang = document.querySelector('#langRow .chip.active');
-  var tl = targetLang ? targetLang.dataset.lang : 'English';
-  var sys = 'You are a professional translator. Translate the given text to '+tl+'. Provide only the translation, no additional explanation.';
-
-  document.getElementById('transBtn').disabled=true;
-  document.getElementById('transLoading').classList.add('show');
-  document.getElementById('transResult').classList.remove('show');
-  try {
-    lastTransText = await callAPI([{role:'system',content:sys},{role:'user',content:[{type:'text',text:txt}]}]);
-    renderHTML(lastTransText,'transBody');
-    document.getElementById('transResult').classList.add('show');
-  } catch(e) {
-    document.getElementById('transBody').textContent='Error: '+e.message;
-    document.getElementById('transResult').classList.add('show');
-  } finally {
-    document.getElementById('transLoading').classList.remove('show');
-    document.getElementById('transBtn').disabled=false;
-  }
-}
-
-function copyText(text, btn) {
-  navigator.clipboard.writeText(text).then(function() {
-    var el = document.getElementById(btn);
-    if (el) { var orig=el.textContent; el.textContent=currentLang==='en'?'Copied!':'Disalin!'; setTimeout(function(){el.textContent=orig;},2000); }
-  });
-}
-
-function copyResult() { copyText(lastResultText,'txt-btn-salin'); }
-function copyKuis() { copyText(lastKuisText,null); }
-function copyTrans() { copyText(lastTransText,null); }
-
-function saveHistory() {
-  if (!lastResultText) return;
-  historyData.unshift({time:new Date().toLocaleString('id-ID'),preview:lastResultText.slice(0,100),full:lastResultText});
-  if (historyData.length>20) historyData.pop();
-  localStorage.setItem('kstools_history',JSON.stringify(historyData));
-  var el = document.getElementById('txt-btn-simpan');
-  if (el) { var orig=el.textContent; el.textContent=currentLang==='en'?'Saved!':'Tersimpan!'; setTimeout(function(){el.textContent=orig;},2000); }
-}
-
-function renderHistory() {
-  var list = document.getElementById('historyList');
-  if (!historyData.length) {
-    list.innerHTML='<div class="empty-state"><div class="empty-icon">&#128338;</div>'+(currentLang==='en'?'No saved history yet':'Belum ada riwayat tersimpan')+'</div>';
-    return;
-  }
-  list.innerHTML = historyData.map(function(item,i){
-    return '<div class="history-item" onclick="viewHistory('+i+')"><div class="history-time">'+item.time+'</div><div class="history-preview">'+item.preview+'</div></div>';
-  }).join('');
-}
-
-function viewHistory(i) {
-  lastResultText = historyData[i].full;
-  showPage('ringkas');
-  renderHTML(historyData[i].full,'resultBody');
-  document.getElementById('resultWrap').classList.add('show');
-}
-
-renderHistory();
 </script>
 </body>
 </html>
