@@ -1,334 +1,821 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ringkas Tugas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <title>K's Tools for School</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
-      --accent: #c8f135; --accent2: #f1c135; --text: #f0f0f0; --muted: #555;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #181818;
+      --border: #222222;
+      --border2: #2d2d2d;
+      --accent: #4ade80;
+      --accent2: #22d3ee;
+      --accent3: #f59e0b;
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --text3: #475569;
+      --danger: #ef4444;
     }
+
     body {
-      background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif;
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; padding: 48px 16px; position: relative; overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 40px 40px; opacity: 0.35; pointer-events: none; z-index: 0;
+
+    /* Sidebar nav */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
     }
-    .wrap { position: relative; z-index: 1; width: 100%; max-width: 720px; }
-    header { margin-bottom: 48px; animation: fadeDown 0.6s ease both; }
-    .badge {
-      display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px;
-      letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
-      border: 1px solid var(--accent); padding: 4px 10px; margin-bottom: 16px;
+
+    .sidebar-logo {
+      padding: 0 20px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
     }
-    h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 800; line-height: 1; letter-spacing: -1px; }
-    h1 span { color: var(--accent); }
-    .sub { margin-top: 12px; color: var(--muted); font-size: 14px; font-family: 'DM Mono', monospace; }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .nav-section {
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .nav-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(74,222,128,0.08); color: var(--accent); border-color: rgba(74,222,128,0.15); }
+
+    .nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* Header */
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .page-desc {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 4px;
+    }
+
+    /* Card */
     .card {
-      background: var(--surface); border: 1px solid var(--border);
-      padding: 28px; margin-bottom: 20px; animation: fadeUp 0.5s ease both;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
     }
-    .card-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
-    .tab {
-      font-family: 'DM Mono', monospace; font-size: 12px; padding: 6px 14px;
-      border: 1px solid var(--border); background: transparent; color: var(--muted);
-      cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 14px;
     }
-    .tab.active, .tab:hover { border-color: var(--accent); color: var(--accent); }
-    textarea {
-      width: 100%; background: #0d0d0d; border: 1px solid var(--border);
-      color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
-      line-height: 1.7; padding: 16px; resize: vertical; min-height: 160px;
-      outline: none; transition: border-color 0.2s;
+
+    /* Mode selector */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
     }
-    textarea:focus { border-color: var(--accent); }
-    textarea::placeholder { color: var(--muted); }
-    .upload-area {
-      border: 2px dashed var(--border); padding: 40px 32px; text-align: center;
-      cursor: pointer; transition: border-color 0.2s, background 0.2s;
-      display: none; user-select: none;
+
+    .mode-btn {
+      padding: 12px 8px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.15s;
+      text-align: center;
     }
-    .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: rgba(200,241,53,0.03); }
-    .upload-area.active { display: block; }
-    .upload-icon { font-size: 32px; margin-bottom: 10px; }
-    .upload-label { font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; line-height: 1.8; }
-    .preview-grid { display: none; margin-top: 12px; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .preview-grid.show { display: grid; }
-    .preview-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--border); }
-    .options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
-    .opt {
-      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px;
-      padding: 6px 12px; border: 1px solid var(--border); background: transparent;
-      color: var(--muted); cursor: pointer; transition: all 0.2s;
+
+    .mode-btn .mode-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    .mode-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(74,222,128,0.05); }
+    .mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(74,222,128,0.08); }
+
+    /* Style selector */
+    .style-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
-    .opt.selected { border-color: var(--accent2); color: var(--accent2); background: rgba(241,193,53,0.05); }
-    .btn {
-      margin-top: 20px; width: 100%; padding: 16px; background: var(--accent);
-      color: #0d0d0d; font-family: 'Syne', sans-serif; font-weight: 700;
-      font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
-      border: none; cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+
+    .style-chip {
+      padding: 5px 12px;
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      transition: all 0.15s;
     }
-    .btn:hover { opacity: 0.88; }
-    .btn:active { transform: scale(0.99); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .result-card { display: none; animation: fadeUp 0.4s ease both; }
-    .result-card.show { display: block; }
-    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .result-title { font-size: 12px; font-family: 'DM Mono', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
-    .copy-btn {
-      font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 12px;
-      border: 1px solid var(--border); background: transparent; color: var(--muted);
-      cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+
+    .style-chip:hover { border-color: var(--accent2); color: var(--accent2); }
+    .style-chip.active { border-color: var(--accent2); color: var(--accent2); background: rgba(34,211,238,0.08); }
+
+    /* Input */
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      resize: vertical;
     }
-    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    textarea { min-height: 140px; }
+    textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+    textarea::placeholder, input[type="text"]::placeholder { color: var(--text3); }
+
+    /* Upload area */
+    .upload-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: none;
+    }
+
+    .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(74,222,128,0.03); }
+    .upload-zone.show { display: block; }
+    .upload-zone-icon { font-size: 28px; margin-bottom: 8px; }
+    .upload-zone-text { font-size: 13px; color: var(--text2); }
+    .upload-zone-sub { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    .preview-row { display: none; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .preview-row.show { display: flex; }
+    .preview-row img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border2); }
+
+    /* Direction input */
+    .direction-wrap { margin-top: 12px; display: none; }
+    .direction-wrap.show { display: block; }
+    .direction-label { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* Submit btn */
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #0a0a0a;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Loading */
+    .loading-wrap { display: none; padding: 24px; text-align: center; }
+    .loading-wrap.show { display: block; }
+    .loading-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; }
+    .loading-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100% { opacity: 0.2; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
+    .loading-text { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+
+    /* Result */
+    .result-wrap { display: none; }
+    .result-wrap.show { display: block; }
+
+    .result-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .result-label {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .result-actions { display: flex; gap: 6px; }
+
+    .action-btn {
+      padding: 5px 12px;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Result body - rendered markdown */
     .result-body {
-      font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.9;
-      color: var(--text); white-space: pre-wrap; background: #0d0d0d;
-      border: 1px solid var(--border); padding: 20px; min-height: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 80px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
     }
-    .loading { display: none; text-align: center; padding: 32px; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--muted); }
-    .loading.show { display: block; }
-    .dots span { animation: blink 1.2s infinite; font-size: 20px; color: var(--accent); }
-    .dots span:nth-child(2) { animation-delay: 0.2s; }
-    .dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+    .result-body h1, .result-body h2, .result-body h3 {
+      color: var(--accent);
+      margin: 16px 0 8px;
+      font-weight: 600;
+    }
+
+    .result-body h1 { font-size: 18px; }
+    .result-body h2 { font-size: 16px; }
+    .result-body h3 { font-size: 14px; }
+
+    .result-body p { margin-bottom: 10px; }
+
+    .result-body ul, .result-body ol {
+      margin: 8px 0 10px 20px;
+    }
+
+    .result-body li { margin-bottom: 4px; }
+
+    .result-body strong { color: var(--accent2); font-weight: 600; }
+    .result-body em { color: var(--accent3); }
+
+    .result-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    .result-body th {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      padding: 8px 12px;
+      text-align: left;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .result-body td {
+      border: 1px solid var(--border2);
+      padding: 8px 12px;
+      color: var(--text);
+    }
+
+    .result-body tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    .result-body code {
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent3);
+    }
+
+    .result-body pre {
+      background: var(--surface);
+      padding: 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    .result-body pre code { background: none; padding: 0; }
+
+    .result-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 14px;
+      color: var(--text2);
+      margin: 10px 0;
+    }
+
+    /* YouTube input */
+    .yt-wrap { display: none; }
+    .yt-wrap.show { display: block; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 16px; }
+      .mobile-nav { display: flex; }
+    }
+
+    .mobile-topbar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-topbar { display: flex; }
+    }
+
+    .mobile-logo { font-size: 14px; font-weight: 700; color: var(--accent); }
+
+    /* History item */
+    .history-item {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .history-item:hover { border-color: var(--border2); }
+    .history-time { font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+    .history-preview { font-size: 13px; color: var(--text2); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .empty-state { text-align: center; padding: 40px; color: var(--text3); font-size: 13px; }
+    .empty-icon { font-size: 32px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="badge">AI Tool &middot; Pelajar</div>
-      <h1>Ringkas<br/><span>Tugas.</span></h1>
-      <p class="sub">// paste teks atau foto buku paket &mdash; langsung diringkas</p>
-    </header>
 
-    <div class="card">
-      <div class="card-label">// Input Tugas</div>
+<!-- Mobile topbar -->
+<div class="mobile-topbar">
+  <div class="mobile-logo">K's Tools</div>
+</div>
 
-      <div class="tabs">
-        <button class="tab active" id="tabText">Teks</button>
-        <button class="tab" id="tabFoto">Foto</button>
-        <button class="tab" id="tabYT">YouTube</button>
-      </div>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">K's Tools</div>
+    <div class="logo-sub">for School</div>
+  </div>
 
-      <textarea id="textInput" placeholder="Paste teks tugas di sini..."></textarea>
-
-      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none"/>
-      <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">&#128247;</div>
-        <div class="upload-label" id="uploadLabel">
-          Klik di sini untuk pilih foto<br/>
-          <span style="font-size:11px;opacity:0.6">Bisa pilih sampai 4 foto sekaligus &middot; JPG &middot; PNG</span>
-        </div>
-      </div>
-      <div class="preview-grid" id="previewGrid"></div>
-      <div id="ytArea" style="display:none;">
-        <input type="text" id="ytUrl" placeholder="Paste link YouTube di sini..." style="width:100%;background:#0d0d0d;border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:16px;outline:none;transition:border-color 0.2s;"/>
-      </div>
-
-      <div class="card-label" style="margin-top:20px;">// Gaya Ringkasan</div>
-      <div class="options" id="styleOpts">
-        <button class="opt selected">Poin Penting</button>
-        <button class="opt">Narasi Singkat</button>
-        <button class="opt">Tabel</button>
-      </div>
-
-      <div class="card-label" style="margin-top:16px;">// Panjang</div>
-      <div class="options" id="lengthOpts">
-        <button class="opt selected">Pendek</button>
-        <button class="opt">Sedang</button>
-        <button class="opt">Detail</button>
-      </div>
-
-      <button class="btn" id="submitBtn">&#9889; Ringkas Sekarang</button>
+  <div class="nav-section">
+    <div class="nav-label">Menu</div>
+    <div class="nav-item active" onclick="showPage('ringkas')">
+      <span class="nav-icon">&#9889;</span> Ringkas
     </div>
-
-    <div class="loading" id="loading">
-      <div class="dots"><span>&#9679;</span><span>&#9679;</span><span>&#9679;</span></div>
-      <div style="margin-top:12px;">Sedang meringkas...</div>
+    <div class="nav-item" onclick="showPage('riwayat')">
+      <span class="nav-icon">&#128338;</span> Riwayat
     </div>
-
-    <div class="card result-card" id="resultCard">
-      <div class="result-header">
-        <div class="result-title">// Hasil Ringkasan</div>
-        <button class="copy-btn" id="copyBtn">Salin</button>
-      </div>
-      <div class="result-body" id="resultBody"></div>
+    <div class="nav-item" onclick="showPage('tentang')">
+      <span class="nav-icon">&#8505;</span> Tentang
     </div>
   </div>
 
-  <script>
-    var currentTab = 'text';
-    var uploadedImages = [];
+  <div class="sidebar-footer">
+    v1.0 &middot; Powered by Groq
+  </div>
+</div>
 
-    document.getElementById('tabText').addEventListener('click', function() {
-      currentTab = 'text';
-      document.getElementById('tabText').classList.add('active');
-      document.getElementById('tabFoto').classList.remove('active');
-      document.getElementById('textInput').style.display = 'block';
-      document.getElementById('uploadArea').classList.remove('active');
-      document.getElementById('previewGrid').classList.remove('show');
-      document.getElementById('ytArea').style.display = 'none';
+<!-- Main -->
+<div class="main">
+
+  <!-- RINGKAS PAGE -->
+  <div class="page active" id="page-ringkas">
+    <div class="page-header">
+      <div class="page-title">Ringkas Materi</div>
+      <div class="page-desc">Teks, foto, atau YouTube &mdash; diringkas sesuai gaya yang kamu mau</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Mode Input</div>
+      <div class="mode-grid">
+        <button class="mode-btn active" id="modeText" onclick="setMode('text')">
+          <span class="mode-icon">&#128196;</span>Teks
+        </button>
+        <button class="mode-btn" id="modeFoto" onclick="setMode('foto')">
+          <span class="mode-icon">&#128247;</span>Foto
+        </button>
+        <button class="mode-btn" id="modeYT" onclick="setMode('yt')">
+          <span class="mode-icon">&#9654;</span>YouTube
+        </button>
+      </div>
+
+      <!-- Text input -->
+      <div id="inputText">
+        <textarea id="textArea" placeholder="Paste atau ketik materi di sini..."></textarea>
+      </div>
+
+      <!-- Foto input -->
+      <div id="inputFoto" style="display:none;">
+        <input type="file" id="fileInput" accept="image/*" multiple style="display:none"/>
+        <div class="upload-zone show" id="uploadZone">
+          <div class="upload-zone-icon">&#128247;</div>
+          <div class="upload-zone-text">Klik untuk pilih foto</div>
+          <div class="upload-zone-sub">Maks 4 foto &middot; JPG &middot; PNG &middot; WEBP</div>
+        </div>
+        <div class="preview-row" id="previewRow"></div>
+        <div class="direction-wrap show" id="dirWrap">
+          <div class="direction-label">Arahan jawaban (opsional)</div>
+          <input type="text" id="directionInput" placeholder="cth: fokus ke rumus, jelaskan langkah-langkah, dll"/>
+        </div>
+      </div>
+
+      <!-- YouTube input -->
+      <div class="yt-wrap" id="inputYT">
+        <input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=..."/>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gaya Ringkasan</div>
+      <div class="style-row" id="styleRow">
+        <button class="style-chip active" data-style="Poin Penting">&#9679; Poin Penting</button>
+        <button class="style-chip" data-style="Narasi Singkat">&#128221; Narasi Singkat</button>
+        <button class="style-chip" data-style="Tabel Ringkasan">&#128203; Tabel</button>
+        <button class="style-chip" data-style="Langkah-langkah">&#128073; Langkah-langkah</button>
+        <button class="style-chip" data-style="Rumus & Definisi">&#10006; Rumus & Definisi</button>
+        <button class="style-chip" data-style="Soal & Jawaban">&#10067; Soal & Jawaban</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;">Pilih satu gaya</div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="doRingkas()">&#9889; Ringkas Sekarang</button>
+
+    <!-- Loading -->
+    <div class="loading-wrap" id="loadingWrap">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-text">Sedang memproses...</div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-wrap" id="resultWrap">
+      <div class="card">
+        <div class="result-toolbar">
+          <div class="result-label">Hasil</div>
+          <div class="result-actions">
+            <button class="action-btn" onclick="copyResult()">Salin</button>
+            <button class="action-btn" onclick="saveHistory()">Simpan</button>
+          </div>
+        </div>
+        <div class="result-body" id="resultBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIWAYAT PAGE -->
+  <div class="page" id="page-riwayat">
+    <div class="page-header">
+      <div class="page-title">Riwayat</div>
+      <div class="page-desc">Hasil ringkasan yang disimpan</div>
+    </div>
+    <div id="historyList">
+      <div class="empty-state">
+        <div class="empty-icon">&#128338;</div>
+        Belum ada riwayat tersimpan
+      </div>
+    </div>
+  </div>
+
+  <!-- TENTANG PAGE -->
+  <div class="page" id="page-tentang">
+    <div class="page-header">
+      <div class="page-title">Tentang</div>
+    </div>
+    <div class="card">
+      <div class="card-title">K's Tools for School</div>
+      <p style="font-size:14px;color:var(--text2);line-height:1.8;">
+        Tool AI buat pelajar — ringkas materi dari teks, foto buku, atau video YouTube.<br/><br/>
+        Dibuat pakai <strong style="color:var(--accent)">Groq AI</strong> (Llama 3) buat teks dan <strong style="color:var(--accent)">Llama 4 Scout</strong> buat gambar.<br/><br/>
+        Output mendukung format <strong style="color:var(--accent2)">Markdown</strong>, <strong style="color:var(--accent2)">Tabel</strong>, dan <strong style="color:var(--accent2)">Rumus Matematika</strong> (LaTeX).
+      </p>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <div class="card-title">Fitur</div>
+      <ul style="font-size:13px;color:var(--text2);line-height:2;padding-left:16px;">
+        <li>Ringkas teks panjang jadi poin penting</li>
+        <li>Baca foto buku paket / soal</li>
+        <li>Arahan custom untuk foto (fokus ke bagian tertentu)</li>
+        <li>Output tabel terstruktur</li>
+        <li>Render rumus matematika otomatis</li>
+        <li>Simpan riwayat ringkasan</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var currentMode = 'text';
+  var uploadedImages = [];
+  var lastResultText = '';
+  var history = JSON.parse(localStorage.getItem('kstools_history') || '[]');
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    document.getElementById('page-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'riwayat') renderHistory();
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('modeText').classList.toggle('active', mode === 'text');
+    document.getElementById('modeFoto').classList.toggle('active', mode === 'foto');
+    document.getElementById('modeYT').classList.toggle('active', mode === 'yt');
+    document.getElementById('inputText').style.display = mode === 'text' ? 'block' : 'none';
+    document.getElementById('inputFoto').style.display = mode === 'foto' ? 'block' : 'none';
+    document.getElementById('inputYT').classList.toggle('show', mode === 'yt');
+  }
+
+  // Style chips - only one active
+  document.getElementById('styleRow').addEventListener('click', function(e) {
+    if (e.target.classList.contains('style-chip')) {
+      document.querySelectorAll('.style-chip').forEach(function(c) { c.classList.remove('active'); });
+      e.target.classList.add('active');
+    }
+  });
+
+  function getStyle() {
+    var sel = document.querySelector('.style-chip.active');
+    return sel ? sel.dataset.style : 'Poin Penting';
+  }
+
+  // Upload
+  document.getElementById('uploadZone').addEventListener('click', function() {
+    document.getElementById('fileInput').click();
+  });
+
+  document.getElementById('uploadZone').addEventListener('dragover', function(e) {
+    e.preventDefault(); this.classList.add('drag');
+  });
+  document.getElementById('uploadZone').addEventListener('dragleave', function() {
+    this.classList.remove('drag');
+  });
+  document.getElementById('uploadZone').addEventListener('drop', function(e) {
+    e.preventDefault(); this.classList.remove('drag');
+    processFiles(e.dataTransfer.files);
+  });
+
+  document.getElementById('fileInput').addEventListener('change', function() {
+    processFiles(this.files);
+  });
+
+  function processFiles(files) {
+    var arr = Array.from(files).slice(0, 4);
+    if (!arr.length) return;
+    uploadedImages = [];
+    var row = document.getElementById('previewRow');
+    row.innerHTML = '';
+    row.classList.add('show');
+    arr.forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var full = e.target.result;
+        var parts = full.split(',');
+        var mt = parts[0].match(/:(.*?);/)[1];
+        uploadedImages.push({ base64: parts[1], mediaType: mt });
+        var img = document.createElement('img');
+        img.src = full;
+        row.appendChild(img);
+      };
+      reader.readAsDataURL(file);
     });
+    document.querySelector('.upload-zone-text').textContent = arr.length + ' foto dipilih';
+  }
 
-    document.getElementById('tabFoto').addEventListener('click', function() {
-      currentTab = 'foto';
-      document.getElementById('tabFoto').classList.add('active');
-      document.getElementById('tabText').classList.remove('active');
-      document.getElementById('textInput').style.display = 'none';
-      document.getElementById('uploadArea').classList.add('active');
-      if (uploadedImages.length) document.getElementById('previewGrid').classList.add('show');
-      document.getElementById('ytArea').style.display = 'none';
-    });
+  async function doRingkas() {
+    var style = getStyle();
+    var sysPrompt = 'Kamu adalah asisten pelajar yang cerdas. Jawab dalam Bahasa Indonesia. Gunakan format Markdown yang baik: gunakan **bold**, *italic*, heading (##), bullet list (-), dan tabel Markdown (| col | col |) jika diminta. Untuk rumus matematika, gunakan format LaTeX inline ($rumus$) atau display ($$rumus$$). JANGAN gunakan simbol ASCII untuk rumus, gunakan LaTeX proper. Output hanya sesuai gaya yang diminta, tidak perlu semua gaya sekaligus.';
 
-    document.getElementById('tabYT').addEventListener('click', function() {
-      currentTab = 'yt';
-      document.getElementById('tabYT').classList.add('active');
-      document.getElementById('tabText').classList.remove('active');
-      document.getElementById('tabFoto').classList.remove('active');
-      document.getElementById('textInput').style.display = 'none';
-      document.getElementById('uploadArea').classList.remove('active');
-      document.getElementById('previewGrid').classList.remove('show');
-      document.getElementById('ytArea').style.display = 'block';
-    });
+    var userMsg = '';
+    var msgContent = [];
 
-    document.getElementById('uploadArea').addEventListener('click', function() {
-      document.getElementById('fileInput').click();
-    });
+    if (currentMode === 'text') {
+      var txt = document.getElementById('textArea').value.trim();
+      if (!txt) { alert('Isi dulu teksnya.'); return; }
+      userMsg = 'Ringkas materi berikut dengan gaya "' + style + '":\n\n' + txt;
+      msgContent = [{ type: 'text', text: userMsg }];
 
-    document.getElementById('uploadArea').addEventListener('dragover', function(e) {
-      e.preventDefault();
-      this.classList.add('drag');
-    });
-
-    document.getElementById('uploadArea').addEventListener('dragleave', function() {
-      this.classList.remove('drag');
-    });
-
-    document.getElementById('uploadArea').addEventListener('drop', function(e) {
-      e.preventDefault();
-      this.classList.remove('drag');
-      processFiles(e.dataTransfer.files);
-    });
-
-    document.getElementById('fileInput').addEventListener('change', function() {
-      processFiles(this.files);
-    });
-
-    function processFiles(files) {
-      var arr = Array.from(files).slice(0, 4);
-      if (!arr.length) return;
-      uploadedImages = [];
-      var grid = document.getElementById('previewGrid');
-      grid.innerHTML = '';
-      grid.classList.add('show');
-      document.getElementById('uploadLabel').innerHTML = '<span style="color:#c8f135">&#10003; ' + arr.length + ' foto dipilih</span>';
-      arr.forEach(function(file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var full = e.target.result;
-          var parts = full.split(',');
-          var mediaType = parts[0].match(/:(.*?);/)[1];
-          uploadedImages.push({ base64: parts[1], mediaType: mediaType });
-          var img = document.createElement('img');
-          img.src = full;
-          grid.appendChild(img);
-        };
-        reader.readAsDataURL(file);
+    } else if (currentMode === 'foto') {
+      if (!uploadedImages.length) { alert('Upload foto dulu.'); return; }
+      var direction = document.getElementById('directionInput').value.trim();
+      var basePrompt = 'Baca semua gambar berikut dan ringkas isinya dengan gaya "' + style + '".';
+      if (direction) basePrompt += ' Arahan khusus: ' + direction + '.';
+      uploadedImages.forEach(function(img) {
+        msgContent.push({ type: 'image_url', image_url: { url: 'data:' + img.mediaType + ';base64,' + img.base64 } });
       });
+      msgContent.push({ type: 'text', text: basePrompt });
+
+    } else if (currentMode === 'yt') {
+      var ytUrl = document.getElementById('ytUrl').value.trim();
+      if (!ytUrl) { alert('Masukkan link YouTube.'); return; }
+      userMsg = 'Ringkas konten dari video YouTube ini dengan gaya "' + style + '": ' + ytUrl + '. Catatan: jika tidak bisa mengakses video, jelaskan bahwa kamu memerlukan transcript.';
+      msgContent = [{ type: 'text', text: userMsg }];
     }
 
-    document.getElementById('styleOpts').addEventListener('click', function(e) {
-      if (e.target.classList.contains('opt')) {
-        this.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
-        e.target.classList.add('selected');
-      }
-    });
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('loadingWrap').classList.add('show');
+    document.getElementById('resultWrap').classList.remove('show');
 
-    document.getElementById('lengthOpts').addEventListener('click', function(e) {
-      if (e.target.classList.contains('opt')) {
-        this.querySelectorAll('.opt').forEach(function(o) { o.classList.remove('selected'); });
-        e.target.classList.add('selected');
-      }
-    });
-
-    function getSelected(id) {
-      var sel = document.getElementById(id).querySelector('.opt.selected');
-      return sel ? sel.textContent.trim() : '';
-    }
-
-    document.getElementById('submitBtn').addEventListener('click', async function() {
-      var style = getSelected('styleOpts');
-      var length = getSelected('lengthOpts');
-      var promptText = 'Kamu adalah asisten pelajar. Ringkas isinya dengan gaya "' + style + '" dan panjang "' + length + '". Tulis dalam Bahasa Indonesia yang jelas dan mudah dipahami. Jika "Poin Penting" gunakan bullet points. Jika "Narasi Singkat" tulis paragraf padat. Jika "Tabel" buat tabel ASCII sederhana.';
-      var content = [];
-
-      if (currentTab === 'text') {
-        var input = document.getElementById('textInput').value.trim();
-        if (!input) { alert('Isi dulu teks tugasnya.'); return; }
-        content = [{ type: 'text', text: promptText + '\n\nTeks:\n"""\n' + input + '\n"""' }];
-      } else if (currentTab === 'foto') {
-        if (!uploadedImages.length) { alert('Upload foto dulu.'); return; }
-        uploadedImages.forEach(function(img) {
-          content.push({ type: 'image', source: { type: 'base64', media_type: img.mediaType, data: img.base64 } });
-        });
-        content.push({ type: 'text', text: promptText });
-      } else if (currentTab === 'yt') {
-        var ytUrl = document.getElementById('ytUrl').value.trim();
-        if (!ytUrl) { alert('Masukkan link YouTube dulu.'); return; }
-        content = [{ type: 'text', text: promptText + '\n\nRingkas konten dari video YouTube ini: ' + ytUrl + '. Jika kamu tidak bisa mengakses video, jelaskan bahwa fitur ini membutuhkan transcript.' }];
-      }
-
-      document.getElementById('submitBtn').disabled = true;
-      document.getElementById('loading').classList.add('show');
-      document.getElementById('resultCard').classList.remove('show');
-
-      try {
-        var msgContent = [];
-        content.forEach(function(c) {
-          if (c.type === 'text') {
-            msgContent.push({ type: 'text', text: c.text });
-          } else if (c.type === 'image') {
-            msgContent.push({ type: 'image_url', image_url: { url: 'data:' + c.source.media_type + ';base64,' + c.source.data } });
-          }
-        });
-        var res = await fetch('https://ringkas-api.ryalandsokay.workers.dev', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: [{ role: 'user', content: msgContent }] })
-        });
-        var data = await res.json();
-        var text = (data.choices && data.choices[0] && data.choices[0].message)
-          ? data.choices[0].message.content
-          : JSON.stringify(data);
-        document.getElementById('resultBody').textContent = text;
-        document.getElementById('resultCard').classList.add('show');
-      } catch (err) {
-        document.getElementById('resultBody').textContent = 'Error: ' + err.message;
-        document.getElementById('resultCard').classList.add('show');
-      } finally {
-        document.getElementById('loading').classList.remove('show');
-        document.getElementById('submitBtn').disabled = false;
-      }
-    });
-
-    document.getElementById('copyBtn').addEventListener('click', function() {
-      var text = document.getElementById('resultBody').textContent;
-      navigator.clipboard.writeText(text).then(function() {
-        document.getElementById('copyBtn').textContent = 'Disalin';
-        setTimeout(function() { document.getElementById('copyBtn').textContent = 'Salin'; }, 2000);
+    try {
+      var res = await fetch('https://ringkas-api.ryalandsokay.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: sysPrompt },
+            { role: 'user', content: msgContent }
+          ]
+        })
       });
+      var data = await res.json();
+      var text = (data.choices && data.choices[0] && data.choices[0].message)
+        ? data.choices[0].message.content
+        : JSON.stringify(data);
+
+      lastResultText = text;
+      renderResult(text);
+      document.getElementById('resultWrap').classList.add('show');
+    } catch(err) {
+      lastResultText = 'Error: ' + err.message;
+      document.getElementById('resultBody').textContent = lastResultText;
+      document.getElementById('resultWrap').classList.add('show');
+    } finally {
+      document.getElementById('loadingWrap').classList.remove('show');
+      document.getElementById('submitBtn').disabled = false;
+    }
+  }
+
+  function renderResult(text) {
+    var html = marked.parse(text);
+    document.getElementById('resultBody').innerHTML = html;
+    if (window.MathJax) {
+      MathJax.typesetPromise([document.getElementById('resultBody')]);
+    }
+  }
+
+  function copyResult() {
+    navigator.clipboard.writeText(lastResultText).then(function() {
+      var btn = event.currentTarget;
+      btn.textContent = 'Disalin!';
+      setTimeout(function() { btn.textContent = 'Salin'; }, 2000);
     });
-  </script>
+  }
+
+  function saveHistory() {
+    if (!lastResultText) return;
+    var item = {
+      time: new Date().toLocaleString('id-ID'),
+      preview: lastResultText.slice(0, 100),
+      full: lastResultText,
+      mode: currentMode,
+      style: getStyle()
+    };
+    history.unshift(item);
+    if (history.length > 20) history.pop();
+    localStorage.setItem('kstools_history', JSON.stringify(history));
+    var btn = event.currentTarget;
+    btn.textContent = 'Tersimpan!';
+    setTimeout(function() { btn.textContent = 'Simpan'; }, 2000);
+  }
+
+  function renderHistory() {
+    var list = document.getElementById('historyList');
+    if (!history.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128338;</div>Belum ada riwayat tersimpan</div>';
+      return;
+    }
+    list.innerHTML = history.map(function(item, i) {
+      return '<div class="history-item" onclick="viewHistory(' + i + ')">' +
+        '<div class="history-time">' + item.time + ' &middot; ' + item.mode + ' &middot; ' + item.style + '</div>' +
+        '<div class="history-preview">' + item.preview + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function viewHistory(i) {
+    lastResultText = history[i].full;
+    showPage('ringkas');
+    renderResult(history[i].full);
+    document.getElementById('resultWrap').classList.add('show');
+  }
+</script>
 </body>
 </html>
