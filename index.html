@@ -481,6 +481,9 @@
     <div class="nav-item" onclick="showPage('riwayat')">
       <span class="nav-icon">&#128338;</span> Riwayat
     </div>
+    <div class="nav-item" onclick="showPage('terjemahan')">
+      <span class="nav-icon">&#127760;</span> Terjemahan
+    </div>
     <div class="nav-item" onclick="showPage('tentang')">
       <span class="nav-icon">&#8505;</span> Tentang
     </div>
@@ -576,6 +579,53 @@
           </div>
         </div>
         <div class="result-body" id="resultBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERJEMAHAN PAGE -->
+  <div class="page" id="page-terjemahan">
+    <div class="page-header">
+      <div class="page-title">Terjemahan</div>
+      <div class="page-desc">Terjemahkan materi ke berbagai bahasa</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Teks yang Mau Diterjemahkan</div>
+      <textarea id="transInput" placeholder="Paste teks di sini..."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Terjemahkan ke</div>
+      <div class="style-row" id="langRow">
+        <button class="style-chip active" data-lang="Bahasa Indonesia">&#127470;&#127465; Indonesia</button>
+        <button class="style-chip" data-lang="English">&#127468;&#127463; English</button>
+        <button class="style-chip" data-lang="Bahasa Melayu">&#127474;&#127486; Melayu</button>
+        <button class="style-chip" data-lang="Arabic">&#127462;&#127479; Arab</button>
+        <button class="style-chip" data-lang="Japanese">&#127471;&#127477; Jepang</button>
+        <button class="style-chip" data-lang="Korean">&#127472;&#127479; Korea</button>
+        <button class="style-chip" data-lang="Mandarin Chinese">&#127464;&#127475; Mandarin</button>
+        <button class="style-chip" data-lang="Spanish">&#127466;&#127480; Spanyol</button>
+        <button class="style-chip" data-lang="French">&#127467;&#127479; Prancis</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="transBtn" onclick="doTerjemah()">&#127760; Terjemahkan</button>
+
+    <div class="loading-wrap" id="transLoading">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-text">Sedang menerjemahkan...</div>
+    </div>
+
+    <div class="result-wrap" id="transResult">
+      <div class="card">
+        <div class="result-toolbar">
+          <div class="result-label">Hasil Terjemahan</div>
+          <div class="result-actions">
+            <button class="action-btn" onclick="copyTrans()">Salin</button>
+          </div>
+        </div>
+        <div class="result-body" id="transBody"></div>
       </div>
     </div>
   </div>
@@ -810,6 +860,58 @@
         '<div class="history-preview">' + item.preview + '</div>' +
         '</div>';
     }).join('');
+  }
+
+  // Lang chips
+  document.getElementById('langRow').addEventListener('click', function(e) {
+    if (e.target.classList.contains('style-chip')) {
+      this.querySelectorAll('.style-chip').forEach(function(c) { c.classList.remove('active'); });
+      e.target.classList.add('active');
+    }
+  });
+
+  var lastTransText = '';
+
+  async function doTerjemah() {
+    var txt = document.getElementById('transInput').value.trim();
+    if (!txt) { alert('Isi dulu teksnya.'); return; }
+    var lang = document.querySelector('#langRow .style-chip.active');
+    var targetLang = lang ? lang.dataset.lang : 'English';
+
+    document.getElementById('transBtn').disabled = true;
+    document.getElementById('transLoading').classList.add('show');
+    document.getElementById('transResult').classList.remove('show');
+
+    try {
+      var res = await fetch('https://ringkas-api.ryalandsokay.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: 'Kamu adalah penerjemah profesional. Terjemahkan teks yang diberikan ke ' + targetLang + '. Hanya berikan hasil terjemahan, tanpa penjelasan tambahan.' },
+            { role: 'user', content: [{ type: 'text', text: txt }] }
+          ]
+        })
+      });
+      var data = await res.json();
+      lastTransText = (data.choices && data.choices[0]) ? data.choices[0].message.content : JSON.stringify(data);
+      document.getElementById('transBody').innerHTML = marked.parse(lastTransText);
+      document.getElementById('transResult').classList.add('show');
+    } catch(err) {
+      document.getElementById('transBody').textContent = 'Error: ' + err.message;
+      document.getElementById('transResult').classList.add('show');
+    } finally {
+      document.getElementById('transLoading').classList.remove('show');
+      document.getElementById('transBtn').disabled = false;
+    }
+  }
+
+  function copyTrans() {
+    navigator.clipboard.writeText(lastTransText).then(function() {
+      var btn = event.currentTarget;
+      btn.textContent = 'Disalin!';
+      setTimeout(function() { btn.textContent = 'Salin'; }, 2000);
+    });
   }
 
   function viewHistory(i) {
