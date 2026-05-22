@@ -30,6 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   background:var(--surface);border-right:1px solid var(--border);
   display:flex;flex-direction:column;z-index:200;
   transition:transform 0.25s ease;
+  transform:translateX(calc(-1 * var(--sidebar-w)));
 }
 .sidebar.collapsed{transform:translateX(calc(-1 * var(--sidebar-w)));}
 
@@ -58,7 +59,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 
 /* TOPBAR */
 .topbar{
-  position:fixed;top:0;left:var(--sidebar-w);right:0;height:52px;
+  position:fixed;top:0;left:0;right:0;height:52px;
   background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 20px;z-index:100;
   transition:left 0.25s ease;
@@ -71,7 +72,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 
 /* MAIN */
 .main{
-  margin-left:var(--sidebar-w);margin-top:52px;
+  margin-left:0;margin-top:52px;
   padding:24px;min-height:calc(100vh - 52px);
   transition:margin-left 0.25s ease;
   max-width:800px;
@@ -171,16 +172,17 @@ textarea::placeholder,input[type=text]::placeholder{color:var(--text3);}
 
 /* RESPONSIVE */
 @media(max-width:768px){
-  :root{--sidebar-w:240px;}
-  .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)));}
+  :root{--sidebar-w:260px;}
+  .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)));box-shadow:4px 0 20px rgba(0,0,0,0.5);}
   .sidebar.open{transform:translateX(0);}
   .close-sidebar{display:block !important;}
-  .topbar{left:0 !important;}
-  .main{margin-left:0 !important;padding:16px;}
+  .topbar{left:0 !important;right:0;}
+  .main{margin-left:0 !important;padding:14px;}
   .main.full{margin-left:0;}
   .mode-grid{grid-template-columns:repeat(3,1fr);}
   .chips{gap:5px;}
   .chip{font-size:11px;padding:4px 9px;}
+  .result-body{font-size:13px;}
 }
 </style>
 </head>
@@ -437,7 +439,7 @@ var lastResultText = '';
 var lastKuisText = '';
 var lastTransText = '';
 var historyData = JSON.parse(localStorage.getItem('kstools_v2') || '[]');
-var sidebarOpen = window.innerWidth > 768;
+var sidebarOpen = false; // always closed on load, user opens manually
 
 // Sidebar
 function toggleSidebar() {
@@ -455,20 +457,32 @@ function updateSidebarState() {
   var ov = document.getElementById('overlay');
   var isMobile = window.innerWidth <= 768;
   if (isMobile) {
-    sb.classList.toggle('open', sidebarOpen);
+    // Mobile: use open class to show, default CSS hides it
+    if (sidebarOpen) {
+      sb.style.transform = 'translateX(0)';
+    } else {
+      sb.style.transform = '';
+    }
     ov.classList.toggle('show', sidebarOpen);
-    main.classList.add('full');
-    tb.classList.add('full');
+    main.style.marginLeft = '0';
+    tb.style.left = '0';
   } else {
-    sb.classList.toggle('collapsed', !sidebarOpen);
-    main.classList.toggle('full', !sidebarOpen);
-    tb.classList.toggle('full', !sidebarOpen);
+    // Desktop: toggle via style
     ov.classList.remove('show');
+    if (sidebarOpen) {
+      sb.style.transform = 'translateX(0)';
+      main.style.marginLeft = 'var(--sidebar-w)';
+      tb.style.left = 'var(--sidebar-w)';
+    } else {
+      sb.style.transform = '';
+      main.style.marginLeft = '0';
+      tb.style.left = '0';
+    }
   }
 }
 window.addEventListener('resize', function() {
-  sidebarOpen = window.innerWidth > 768;
-  updateSidebarState();
+  if (window.innerWidth > 768 && sidebarOpen) { updateSidebarState(); }
+  else if (window.innerWidth <= 768) { sidebarOpen = false; updateSidebarState(); }
 });
 
 // Pages
