@@ -108,7 +108,7 @@ textarea:focus,input[type=text]:focus{border-color:var(--accent);}
 textarea::placeholder,input[type=text]::placeholder{color:var(--text3);}
 
 /* UPLOAD */
-.upload-zone{border:1.5px dashed var(--border2);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:all 0.15s;display:none;}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(74,222,128,0.03);}
 .upload-zone.show{display:block;}
 .upload-zone-icon{font-size:24px;margin-bottom:6px;}
@@ -277,7 +277,7 @@ textarea::placeholder,input[type=text]::placeholder{color:var(--text3);}
 
       <div id="inputFoto" style="display:none;">
         <input type="file" id="fileInput" accept="image/*" multiple style="display:none"/>
-        <div class="upload-zone show" id="uploadZone">
+        <div class="upload-zone" id="uploadZone" style="display:block;">
           <div class="upload-zone-icon">&#128247;</div>
           <div class="upload-zone-text" id="txt-upload-text">Klik untuk pilih foto</div>
           <div class="upload-zone-sub" id="txt-upload-sub">Maks 4 foto &middot; JPG &middot; PNG</div>
@@ -507,13 +507,12 @@ function showPage(name) {
 // Mode
 function setMode(mode) {
   currentMode = mode;
-  ['text','foto','yt'].forEach(function(m){
-    var id = 'mode'+m.charAt(0).toUpperCase()+m.slice(1);
-    document.getElementById(id).classList.toggle('active', m===mode);
-  });
-  document.getElementById('inputText').style.display = mode==='text'?'block':'none';
-  document.getElementById('inputFoto').style.display = mode==='foto'?'block':'none';
-  document.getElementById('inputYT').style.display = mode==='yt'?'block':'none';
+  document.getElementById('modeText').classList.toggle('active', mode==='text');
+  document.getElementById('modeFoto').classList.toggle('active', mode==='foto');
+  document.getElementById('modeYT').classList.toggle('active', mode==='yt');
+  document.getElementById('inputText').style.display = mode==='text' ? 'block' : 'none';
+  document.getElementById('inputFoto').style.display = mode==='foto' ? 'block' : 'none';
+  document.getElementById('inputYT').style.display = mode==='yt' ? 'block' : 'none';
 }
 
 // Chip selectors
